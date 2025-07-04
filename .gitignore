@@ -1,0 +1,72 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# VS Code settings
+.vscode/
+
+# Environment variables
+.env
+.env.*
+
+# PyInstaller
+*.manifest
+*.spec
+
+dist/
+build/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# Data, models, outputs
+output/
+dataset/
+model/
+model.bak/
+dataset/*.txt
+!dataset/rockyou-cleaned-Test.txt
+!dataset/rockyou-cleaned-Train.txt
+
+# Logs
+log/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python virtual environments
+venv/
+.venv/
+
+# Kaggle
+kaggle/
+
+# Ignore training artifacts
+*.bin
+*.safetensors
+
+# Ignore generated files
+*.bak
