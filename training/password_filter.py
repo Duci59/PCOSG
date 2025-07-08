@@ -32,10 +32,10 @@ def filter_passwords(input_file, output_file, pattern):
         for pw in matched:
             f.write(pw + '\n')
 
-    print(f'✅ Found {len(matched)} password(s) matching pattern "{pattern}".')
+    print(f'Found {len(matched)} password(s) matching pattern "{pattern}".')
 
 if __name__ == '__main__':
-    # 👉 Example
+    # Example
     input_file = '../dataset/rockyou-cleaned-Test.txt'
     output_file = 'filtered_passwords.txt'
     

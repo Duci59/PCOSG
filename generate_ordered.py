@@ -29,20 +29,20 @@ def expand_node(node, model, tokenizer, top_k):
     - Chọn top-k token
     - Tất cả trên GPU nếu có
     """
-    # ✅ Đưa prefix lên GPU
+    # Đưa prefix lên GPU
     model_input = torch.tensor([node.prefix_tokens], dtype=torch.long, device=DEVICE)
 
     with torch.no_grad():
         outputs = model(model_input)
         logits = outputs.logits[:, -1, :]
 
-        # ✅ Tính softmax và log trên GPU luôn
+        #Tính softmax và log trên GPU luôn
         probs = torch.softmax(logits, dim=-1)
         log_probs = torch.log(probs + 1e-10)
 
     log_probs = log_probs.squeeze(0)  # Shape [vocab_size], vẫn trên GPU
 
-    # ✅ Lọc theo pattern constraint
+    # Lọc theo pattern constraint
     allowed_types = node.allowed_token_types()
     filtered_token_ids = []
     filtered_log_probs = []
@@ -56,7 +56,7 @@ def expand_node(node, model, tokenizer, top_k):
     if not filtered_token_ids:
         return []
 
-    # ✅ Chọn top-k
+    # Chọn top-k
     filtered_log_probs_tensor = torch.tensor(filtered_log_probs, device=DEVICE)
     topk_values, topk_indices = torch.topk(filtered_log_probs_tensor, k=min(top_k, len(filtered_log_probs)))
 
@@ -82,7 +82,7 @@ def main():
 
     args = parser.parse_args()
 
-    # ✅ Hàm random pattern nhẹ nhàng hơn
+    # Hàm random pattern nhẹ nhàng hơn
     def generate_random_pattern():
         parts = []
         num_L = random.randint(5, 8)
@@ -101,9 +101,9 @@ def main():
 
     if not args.pattern:
         args.pattern = generate_random_pattern()
-        print(f"✅ No pattern provided. Generated random pattern: {args.pattern}")
+        print(f"No pattern provided. Generated random pattern: {args.pattern}")
 
-    print("✅ Loading tokenizer...")
+    print("Loading tokenizer...")
     tokenizer = CharTokenizer(
         vocab_file=args.tokenizer_vocab,
         char_type_map_file=args.tokenizer_type_map,
@@ -114,11 +114,11 @@ def main():
         pad_token="<PAD>"
     )
 
-    print("✅ Loading model...")
+    print("Loading model...")
     model = GPT2LMHeadModel.from_pretrained(args.model_path).to(DEVICE)
     model.eval()
 
-    print("✅ Initializing frontier...")
+    print("Initializing frontier...")
     # Parse pattern like "L4N3S1" → {'L': 4, 'N': 3, 'S': 1}
     pattern_state = {}
     matches = re.findall(r'([LNS])(\d+)', args.pattern)
@@ -173,15 +173,15 @@ def main():
     pbar.close()
 
     if frontier.is_empty() and len(results) < args.generate_num:
-        print(f"⚠️ Frontier cạn kiệt! Chỉ sinh được {len(results)} mật khẩu cho pattern: {args.pattern}")
+        print(f"Frontier cạn kiệt! Chỉ sinh được {len(results)} mật khẩu cho pattern: {args.pattern}")
 
-    print(f"✅ Saving {len(results)} passwords to {args.output_txt}...")
+    print(f"Saving {len(results)} passwords to {args.output_txt}...")
 
     with open(args.output_txt, "w", encoding="utf-8") as f:
         for _, password, log_prob in results:
             f.write(f"{password}\t{log_prob}\n")
 
-    print("✅ Done.")
+    print("Done.")
 
 
 if __name__ == "__main__":

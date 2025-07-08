@@ -15,9 +15,7 @@ from transformers import GPT2Config, GPT2LMHeadModel, Trainer, TrainingArguments
 # Disable wandb
 os.environ["WANDB_DISABLED"] = "true"
 
-# ============================================
 # Argument Parser
-# ============================================
 parser = argparse.ArgumentParser()
 
 # File paths
@@ -46,9 +44,7 @@ parser.add_argument("--resume_from_checkpoint", type=str, default=None, help="Pa
 
 args = parser.parse_args()
 
-# ============================================
 # Setup
-# ============================================
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"[INFO] Using device: {device}")
 
@@ -72,9 +68,7 @@ eval_step = args.eval_step
 save_step = args.save_step
 early_stop = args.early_stop
 
-# ============================================
 # Tokenizer
-# ============================================
 print('[INFO] Loading tokenizer.')
 tokenizer = CharTokenizer(
     vocab_file=vocab_file,
@@ -85,9 +79,7 @@ tokenizer = CharTokenizer(
     pad_token="<PAD>",
 )
 
-# ============================================
 # Dataset
-# ============================================
 print('[INFO] Loading dataset.')
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 raw_dataset = load_dataset('text', data_files=train_dataset_path, num_proc=num_processer, split='train')
@@ -101,9 +93,7 @@ split_dataset = tokenized_dataset.train_test_split(test_size=0.125)
 train_dataset = split_dataset['train']
 eval_dataset = split_dataset['test']
 
-# ============================================
 # Model
-# ============================================
 if resume_ckpt and os.path.exists(resume_ckpt):
     print(f'[INFO] Resuming training from checkpoint: {resume_ckpt}')
     model = GPT2LMHeadModel.from_pretrained(resume_ckpt)
@@ -130,9 +120,7 @@ model.to(device)
 
 print(f"[INFO] Model Parameters: {model.num_parameters()}")
 
-# ============================================
 # Training Arguments
-# ============================================
 print('[INFO] Preparing training arguments.')
 training_args = TrainingArguments(
     output_dir=model_output_dir,
@@ -157,9 +145,7 @@ training_args = TrainingArguments(
     no_cuda=not torch.cuda.is_available()
 )
 
-# ============================================
 # Trainer
-# ============================================
 trainer = Trainer(
     model=model,
     args=training_args,
@@ -168,18 +154,14 @@ trainer = Trainer(
     eval_dataset=eval_dataset
 )
 
-# ============================================
 # Train
-# ============================================
 print('*' * 30)
 print('[INFO] Training begins.')
 trainer.train(resume_from_checkpoint=resume_ckpt)
 print('*' * 30)
 print('[INFO] Training complete.')
 
-# ============================================
 # Save final model
-# ============================================
 final_save_path = os.path.join(model_output_dir, "last-step")
 trainer.save_model(final_save_path)
 print(f'[INFO] Final model saved to {final_save_path}')
