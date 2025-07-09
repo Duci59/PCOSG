@@ -44,6 +44,7 @@ coverage.xml
 output/
 test_pattern/
 dataset/
+dataset_minecraft/
 model/
 model.bak/
 dataset/*.txt
