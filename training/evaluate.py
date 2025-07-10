@@ -2,7 +2,6 @@
 import argparse
 import os
 
-# Parse command-line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--test_file", help="Path to test password .txt file", type=str, required=True)
 parser.add_argument("--gen_path", help="Path to generated password files", type=str, required=True)

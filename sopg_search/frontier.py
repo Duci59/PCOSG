@@ -1,6 +1,5 @@
 """
 frontier.py - Định nghĩa FrontierQueue cho Pattern-Aware SOPG
-
 Mục đích:
     - Quản lý frontier trong tree search
     - Ưu tiên các Node có log-prob cao
@@ -15,10 +14,9 @@ from .node import Node
 class FrontierQueue:
     """
     Hàng đợi ưu tiên (priority queue) để lưu trữ các Node trong search.
-    - Ưu tiên node có log-prob cao hơn.
-    - Tránh duplicate thông qua visited set.
+    Ưu tiên node có log-prob cao hơn.
+    Tránh duplicate thông qua visited set.
     """
-
     def __init__(self):
         # Priority queue cài bằng heapq
         self.heap: List = []
@@ -26,9 +24,7 @@ class FrontierQueue:
         self.visited: Set = set()
 
     def add(self, node: Node):
-        """
-        Thêm node mới vào frontier nếu chưa duplicate.
-        """
+        # Thêm node mới vào frontier nếu chưa duplicate.
         # Kiểm tra duplicate bằng prefix_tokens
         prefix_tuple = tuple(node.prefix_tokens)
         if prefix_tuple in self.visited:
@@ -41,22 +37,16 @@ class FrontierQueue:
         heapq.heappush(self.heap, (-node.log_prob, node))
 
     def pop(self) -> Node:
-        """
-        Lấy node có log-prob cao nhất ra khỏi frontier.
-        """
+        # Lấy node có log-prob cao nhất ra khỏi frontier.
         if not self.heap:
             raise IndexError("FrontierQueue is empty!")
         _, node = heapq.heappop(self.heap)
         return node
 
     def is_empty(self) -> bool:
-        """
-        Frontier còn node không.
-        """
+        # Frontier còn node không.
         return len(self.heap) == 0
 
     def size(self) -> int:
-        """
-        Số lượng node trong frontier.
-        """
+        # Số lượng node trong frontier.
         return len(self.heap)

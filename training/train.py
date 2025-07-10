@@ -12,10 +12,8 @@ from transformers import DataCollatorForLanguageModeling
 from datasets import load_dataset
 from transformers import GPT2Config, GPT2LMHeadModel, Trainer, TrainingArguments, EarlyStoppingCallback
 
-# Disable wandb
 os.environ["WANDB_DISABLED"] = "true"
 
-# Argument Parser
 parser = argparse.ArgumentParser()
 
 # File paths

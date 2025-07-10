@@ -9,7 +9,7 @@ class CharTokenizer(PreTrainedTokenizer):
     def __init__(
         self,
         vocab_file,
-        char_type_map_file,              # Thêm tham số mới
+        char_type_map_file,
         add_bos_and_eos: bool = True,
         padding_side='right',
         bos_token=None,
@@ -39,7 +39,7 @@ class CharTokenizer(PreTrainedTokenizer):
         self.pad_token_id = self.encoder[self.pad_token]
         self.unk_token_id = self.encoder[self.unk_token]
 
-        # 📌 Load char_type_map để map token_id → 'L'/'N'/'S'
+        # Load char_type_map để map token_id → 'L'/'N'/'S'
         with open(char_type_map_file, encoding="utf-8") as map_handle:
             self.char_type_mapping_raw = json.load(map_handle)
 
@@ -159,9 +159,7 @@ class CharTokenizer(PreTrainedTokenizer):
         return [self.decode(indices[i]) for i in range(indices.shape[0])]
 
     def get_char_type(self, token_id: int) -> str:
-        """
-        Trả về 'L', 'N' hoặc 'S' tương ứng với token_id.
-        """
+        # Trả về 'L', 'N' hoặc 'S' tương ứng với token_id.
         return self.token_type_map.get(token_id, "UNK")
 
 

@@ -42,6 +42,9 @@ coverage.xml
 
 # Data, models, outputs
 output/
+minecraft/
+rockyou/
+result_evaluate/
 test_pattern/
 dataset/
 dataset_minecraft/

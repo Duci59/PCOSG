@@ -20,7 +20,7 @@ def pattern_to_regex(pattern):
 
 def filter_passwords(input_file, output_file, pattern):
     regex_string = pattern_to_regex(pattern)
-    print(f'Compiled regex: {regex_string}')  # debug
+    print(f'Compiled regex: {regex_string}')
     regex = re.compile(regex_string)
     
     with open(input_file, 'r', encoding='utf-8') as f:
@@ -35,11 +35,9 @@ def filter_passwords(input_file, output_file, pattern):
     print(f'Found {len(matched)} password(s) matching pattern "{pattern}".')
 
 if __name__ == '__main__':
-    # Example
     input_file = '../dataset/rockyou-cleaned-Test.txt'
     output_file = 'filtered_passwords.txt'
     
-    # Change pattern here
-    pattern = 'L6'  # test with L3N5, L6, N10, L2N2S1, etc.
+    pattern = 'L6'
     
     filter_passwords(input_file, output_file, pattern)

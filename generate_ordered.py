@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
 """
 generate_ordered.py - Sinh mật khẩu theo pattern với thứ tự xác suất giảm dần
-
-Mục đích:
-    - Input: pattern (ví dụ "L4N3S1")
-    - Output: file TXT với mật khẩu theo xác suất cao nhất trước
+Input: pattern (ví dụ "L4")
+Output: file TXT với mật khẩu theo xác suất cao nhất trước
 """
 
 import argparse
@@ -24,23 +21,21 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 def expand_node(node, model, tokenizer, top_k):
     """
     Sinh các child node từ 1 node hiện tại.
-    - Query GPT để lấy phân phối token tiếp theo
-    - Lọc token theo pattern constraint
-    - Chọn top-k token
-    - Tất cả trên GPU nếu có
+    Query từ model GPT đã train để lấy phân phối của token tiếp theo
+    Lọc token theo pattern constraint
+    Chọn top-k token
     """
-    # Đưa prefix lên GPU
+    # GPU
     model_input = torch.tensor([node.prefix_tokens], dtype=torch.long, device=DEVICE)
 
     with torch.no_grad():
         outputs = model(model_input)
         logits = outputs.logits[:, -1, :]
 
-        #Tính softmax và log trên GPU luôn
         probs = torch.softmax(logits, dim=-1)
         log_probs = torch.log(probs + 1e-10)
 
-    log_probs = log_probs.squeeze(0)  # Shape [vocab_size], vẫn trên GPU
+    log_probs = log_probs.squeeze(0)
 
     # Lọc theo pattern constraint
     allowed_types = node.allowed_token_types()
@@ -82,7 +77,6 @@ def main():
 
     args = parser.parse_args()
 
-    # Hàm random pattern nhẹ nhàng hơn
     def generate_random_pattern():
         parts = []
         num_L = random.randint(5, 8)
@@ -119,7 +113,7 @@ def main():
     model.eval()
 
     print("Initializing frontier...")
-    # Parse pattern like "L4N3S1" → {'L': 4, 'N': 3, 'S': 1}
+    # Parse pattern "L4N3S1" → {'L': 4, 'N': 3, 'S': 1}
     pattern_state = {}
     matches = re.findall(r'([LNS])(\d+)', args.pattern)
     for t, count in matches:

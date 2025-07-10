@@ -1,9 +1,8 @@
 """
 packing.py - Hỗ trợ packing cho SOPG Frontier
-
 Mục đích:
-    - Gom các node có log-prob thấp thành 1 meta-node (PackedNode)
-    - Giảm số lượng node trong frontier → tiết kiệm bộ nhớ
+    - Gom các node có log-prob thấp hơn threshold thành 1 PackedNode
+    - Giảm số lượng node trong frontier để tiết kiệm bộ nhớ
 """
 
 from typing import List, Union
@@ -11,19 +10,15 @@ from .node import Node
 
 
 class PackedNode:
-    """
-    Node đặc biệt đại diện cho nhóm các node con có log-prob thấp.
-    Khi cần mở rộng → unpack ra.
-    """
+    # Node đặc biệt đại diện cho nhóm các node con có log-prob thấp.
+    # Khi cần mở rộng → unpack ra.
     def __init__(self, children: List[Node]):
         self.children = children
         # log_prob đại diện = trung bình log_prob (hoặc min)
         self.log_prob = min(child.log_prob for child in children)
 
     def __lt__(self, other):
-        """
-        Hỗ trợ so sánh trong PriorityQueue.
-        """
+        # Hỗ trợ so sánh trong PriorityQueue.
         return self.log_prob > other.log_prob
 
     def __repr__(self):
@@ -33,10 +28,10 @@ class PackedNode:
 def pack_nodes(nodes: List[Node], threshold: float) -> List[Union[Node, PackedNode]]:
     """
     Gom các node có log_prob thấp hơn threshold vào PackedNode.
-
-    :param nodes: Danh sách Node ban đầu
-    :param threshold: Ngưỡng log_prob để quyết định packing
-    :return: List Node hoặc PackedNode
+    nodes: Danh sách Node ban đầu
+    threshold: Ngưỡng log_prob để quyết định packing
+    
+    Trả về List Node hoặc PackedNode
     """
     high_prob_nodes = []
     low_prob_nodes = []
@@ -57,7 +52,5 @@ def pack_nodes(nodes: List[Node], threshold: float) -> List[Union[Node, PackedNo
 
 
 def unpack_node(packed_node: PackedNode) -> List[Node]:
-    """
-    Giải nén PackedNode thành danh sách node con.
-    """
+    # Giải nén PackedNode thành danh sách node con.
     return packed_node.children

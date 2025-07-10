@@ -22,7 +22,7 @@ class Node:
 
     def __init__(
         self,
-        prefix_tokens: List[int],
+        prefix_tokens: List[int], 
         log_prob: float,
         depth: int,
         pattern_state: Dict[str, int],
@@ -30,14 +30,13 @@ class Node:
         pattern: str
     ):
         """
-        Khởi tạo Node.
-
-        :param prefix_tokens: Chuỗi token đã sinh đến hiện tại
-        :param log_prob: Tổng log-xác suất
-        :param depth: Vị trí hiện tại trong pattern
-        :param pattern_state: dict {'L': remaining, 'N': remaining, 'S': remaining}
-        :param tokenizer: Đối tượng tokenizer hỗ trợ get_char_type
-        :param pattern: Pattern gốc (ví dụ "L4N3S1")
+        Khởi tạo Node:
+        prefix_tokens: Chuỗi token đã sinh đến hiện tại
+        log_prob: Tổng logarit xác suất
+        depth: Vị trí hiện tại trong pattern
+        pattern_state: dict {'L': remaining, 'N': remaining, 'S': remaining} kiểm tra số lượng ký tự còn lại để tạo
+        tokenizer: Đối tượng tokenizer
+        pattern: Pattern gốc
         """
         self.prefix_tokens = prefix_tokens
         self.log_prob = log_prob
@@ -47,39 +46,30 @@ class Node:
         self.pattern = pattern
 
     def is_terminal(self) -> bool:
-        """
-        Kiểm tra node đã hoàn thành pattern chưa.
-        """
+        # Kiểm tra node đã hoàn thành pattern chưa.
         return all(v == 0 for v in self.pattern_state.values())
 
     def allowed_token_types(self) -> List[str]:
-        """
-        Trả về danh sách các loại ký tự còn được phép sinh.
-        Ví dụ: ['L', 'N', 'S']
-        """
+        # Trả về danh sách các loại ký tự còn được phép sinh.
         return [k for k, v in self.pattern_state.items() if v > 0]
 
     def update_pattern_state(self, next_char_type: str) -> Dict[str, int]:
-        """
-        Trả về bản sao mới của pattern_state sau khi sinh 1 ký tự.
-        Giảm count tương ứng với loại ký tự.
+        # Trả về bản sao mới của pattern_state sau khi sinh 1 ký tự. Giảm count tương ứng với loại ký tự.
 
-        :param next_char_type: 'L', 'N', hoặc 'S'
-        :return: dict mới với số đếm cập nhật
-        """
+        # next_char_type: 'L', 'N', hoặc 'S'
         new_state = self.pattern_state.copy()
         if next_char_type in new_state and new_state[next_char_type] > 0:
             new_state[next_char_type] -= 1
+
+        # Trả về dict mới với số đếm cập nhật
         return new_state
 
     def copy_with_new_token(self, new_token: int, new_log_prob: float) -> 'Node':
-        """
-        Tạo node mới với prefix mở rộng thêm 1 token.
+        # Tạo node mới với prefix mở rộng thêm 1 token.
 
-        :param new_token: token ID mới được sinh
-        :param new_log_prob: log-prob của token mới
-        :return: Node mới
-        """
+        # new_token: token ID mới được sinh
+        # new_log_prob: log-prob của token mới
+
         # Xác định loại ký tự của token mới
         next_char_type = self.tokenizer.get_char_type(new_token)
 
@@ -90,7 +80,7 @@ class Node:
         # Cập nhật pattern_state
         new_pattern_state = self.update_pattern_state(next_char_type)
 
-        # Tạo node mới
+        # Trả về Node mới
         return Node(
             prefix_tokens=self.prefix_tokens + [new_token],
             log_prob=self.log_prob + new_log_prob,
@@ -109,9 +99,6 @@ class Node:
         return self.log_prob > other.log_prob
 
     def __repr__(self) -> str:
-        """
-        Hiển thị Node khi print/debug.
-        """
         return (
             f"Node(prefix_tokens={self.prefix_tokens}, "
             f"log_prob={self.log_prob:.4f}, "
